@@ -16,7 +16,6 @@ import (
 )
 
 /*
-	问题: 重复导入 是否需要检测?(涉及到状态)
 	csv格式: `phone,balance,expired_at`
 	时间格式: `2018-08-17 15:05:46`
 */
@@ -135,11 +134,12 @@ func importToDB(dbOptions mtools.DatabaseOptions, merchants []mtools.ExampleCSV)
 	tx := db.Begin()
 	index := 0
 	mLength := len(merchants)
+	batch := 10000
 	for {
 		wg.Add(1)
-		if index+10000 < mLength {
+		if index+batch < mLength {
 			go func(index int) {
-				batchImport(tx, merchants[index:index+10000])
+				batchImport(tx, merchants[index:index+batch])
 			}(index)
 		} else {
 			go func(index int) {
@@ -147,7 +147,7 @@ func importToDB(dbOptions mtools.DatabaseOptions, merchants []mtools.ExampleCSV)
 			}(index)
 			break
 		}
-		index = index + 10000
+		index = index + batch
 	}
 	wg.Wait()
 	if tx.Commit().Error != nil {

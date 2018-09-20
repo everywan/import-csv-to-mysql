@@ -1,0 +1,6 @@
+database:
+  driver: mysql
+  dsn: "fpay:fpay123@tcp(192.168.165.129:3306)/deposit?timeout=3s&charset=utf8&parseTime=True&loc=Local"
+  keep_alive: 300
+  max_opens: 20
+  max_idles: 3
